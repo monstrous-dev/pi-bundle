@@ -1,0 +1,2 @@
+# install.sh must stay LF everywhere or bash dies on CRLF
+*.sh text eol=lf
