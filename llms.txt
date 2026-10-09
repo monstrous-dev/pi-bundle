@@ -1,0 +1,56 @@
+# pi-bundle
+
+> One-shot installer for the monstrous-dev pi stack: the pi coding agent fork plus every pi package published under the monstrous-dev GitHub account.
+
+pi-bundle installs the [pi coding agent](https://github.com/monstrous-dev/pi) from the monstrous-dev fork — clone, build, `npm link` so the global `pi` command runs the fork — then installs every monstrous-dev pi package via `pi install`. Package lists are discovered live from the GitHub API (every repo except `pi` itself), with a hardcoded fallback when offline. Installers are re-runnable: an existing clone is hard-reset to `origin/main` and rebuilt.
+
+## Install
+
+- [install.ps1](install.ps1): Windows installer (PowerShell 5.1+). Run: `powershell -ExecutionPolicy Bypass -File .\install.ps1`
+- [install.sh](install.sh): Linux/Zorin installer (bash). Run: `chmod +x install.sh && ./install.sh`
+- [README.md](README.md): full usage, options, update loop, and revert instructions
+
+Options (both flavors): `--bundle-dir <path>` / `-BundleDir <path>` to set the clone location, `--packages a,b,c` / `-Packages a,b,c` to skip discovery and install a specific set.
+
+## Requirements
+
+- git
+- Node.js >= 22.19 (pi's minimum; installers verify and print the NodeSource 22.x one-liner on Ubuntu-likes)
+- npm (ships with Node.js)
+
+## What it installs
+
+The pi coding agent fork, plus all current monstrous-dev packages:
+
+- [pi](https://github.com/monstrous-dev/pi): the coding agent fork — cloned into the bundle dir, built from source, linked as the global `pi` CLI
+- [foreman](https://github.com/monstrous-dev/foreman): turn a pi session into a managing agent — workers, gates, and a Board
+- [wikiman](https://github.com/monstrous-dev/wikiman): project memory for pi — the agent reads the wiki first and writes back what it learns
+- [intentman](https://github.com/monstrous-dev/intentman): intent classification for pi — know what the user wants before the agent starts
+- [revertman](https://github.com/monstrous-dev/revertman): undo for your agent — files and conversation, back to any message
+- [showman](https://github.com/monstrous-dev/showman): docs belong in a browser, not in chat — rich HTML documents from chat
+- [agentman](https://github.com/monstrous-dev/agentman): intelligent delegation — one agent's noise is another agent's whole day
+
+Packages install per-user into `~/.pi/agent/settings.json` (global across projects). `pi list` shows them; `pi remove <source>` drops one.
+
+## Updating
+
+```bash
+git -C <bundle-dir>/pi pull
+cd <bundle-dir>/pi && npm install --ignore-scripts && npm run build
+pi update --extensions
+```
+
+## Reverting the CLI
+
+`npm link` shadows any existing global `pi` (e.g. the official npm release). Revert with:
+
+```bash
+npm uninstall -g @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+```
+
+## Optional
+
+- [monstrous-dev repositories](https://github.com/monstrous-dev?tab=repositories): the live package list this installer discovers
+- [pi upstream](https://github.com/earendil-works/pi): the original monorepo (`packages/coding-agent` is the CLI)
+- [pi packages docs](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/packages.md): how `pi install`, package sources, and discovery work
